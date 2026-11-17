@@ -11,7 +11,7 @@
 | Live add/view/update/delete and missing-row checks | PASS: live CRUD and missing-row handling; test record removed |
 | GUI visual walkthrough and empty-state demonstration | Not yet verified |
 | Javadoc browser review | Not yet verified |
-| GitHub push | No remote configured |
+| GitHub push | PASS: published to Saad-i514/SC-OEL on main |
 
 Run `./build.ps1 test` for local validation. Run `./configure-db.ps1`, then `./build.ps1 integration` using the configured Supabase session-pooler address. Integration tests create one uniquely named item and clean up only that ID, never clear the inventory.
 
@@ -26,7 +26,7 @@ Run `./build.ps1 test` for local validation. Run `./configure-db.ps1`, then `./b
 8. Open docs/javadoc/index.html in a browser and review the API documentation.
 
 ## Remaining submission work
-Provide the actual two group-member names, demonstrate from an IDE, capture genuine successful GUI screenshots, prepare the detailed report PDF and source ZIP, and push to the intended GitHub repository. No results have been fabricated for these steps.
+Provide the actual two group-member names, demonstrate from an IDE, capture genuine successful GUI screenshots, prepare the detailed report PDF and credential-free source ZIP. No results have been fabricated for these steps.
 
 ## Security and operating scope
 Credentials live only in ignored db.properties. The migration enables RLS and revokes anonymous/authenticated API access. JDBC is intended for a trusted store operator on a private machine. Do not distribute database administrator credentials with the application; a distributed product needs user authentication and restricted database permissions. SQL values use prepared statements; failures do not silently fall back to temporary storage.
