@@ -56,3 +56,8 @@ Compilation, validation and view tests passed after the colour/control update. N
 ## Demo inventory
 
 Executed `scripts/SeedDemo.java` with assertions enabled against Supabase. First run inserted and read back all 12 sample products (192 units). A second run inserted zero and skipped all 12 existing names, confirming repeat-run behaviour. Every sample name is marked `(Demo)`; existing inventory was not updated or deleted. Status distribution: 7 In Stock, 3 Low Stock, 2 Out of Stock.
+
+
+## Stock-attention formatting
+
+Replaced slash-separated text with typed product rows: bold name, formatted remaining quantity, aligned Low Stock/Out of Stock badge, and subtle row separators. The card shows three complete 56 px rows, with vertical scrolling and a separate empty state. Full product details remain available in tooltips. Validation and view checks passed, including singular quantities, zero stock, long names, and renderer painting. Visually verified the populated panel and captured `docs/screenshots/attention.png`.

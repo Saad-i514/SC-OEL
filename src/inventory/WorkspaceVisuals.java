@@ -14,6 +14,30 @@ import java.nio.file.Path;
 final class WorkspaceVisuals {
     private WorkspaceVisuals() { }
 
+    static final class AttentionRow extends JPanel implements ListCellRenderer<Item> {
+        private static final long serialVersionUID = 1L;
+        private final JLabel name = new JLabel(), quantity = new JLabel(), badge = new JLabel();
+        AttentionRow() {
+            super(new BorderLayout(12, 0)); setBackground(Color.WHITE);
+            setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,1,0,new Color(237,231,244)),BorderFactory.createEmptyBorder(8,4,8,8)));
+            var details = new JPanel(new GridLayout(2,1,0,3)); details.setOpaque(false);
+            name.setFont(new Font("Segoe UI",Font.BOLD,12)); name.setForeground(new Color(43,32,69));
+            quantity.setFont(new Font("Segoe UI",Font.PLAIN,11)); quantity.setForeground(new Color(111,100,130));
+            details.add(name); details.add(quantity); add(details,BorderLayout.CENTER);
+            badge.setFont(new Font("Segoe UI",Font.BOLD,10)); badge.setHorizontalAlignment(SwingConstants.CENTER);
+            badge.setOpaque(true); badge.setPreferredSize(new Dimension(104,24));
+            var badgeHolder = new JPanel(new GridBagLayout()); badgeHolder.setOpaque(false); badgeHolder.add(badge); add(badgeHolder,BorderLayout.EAST);
+        }
+        @Override public Component getListCellRendererComponent(JList<? extends Item> list,Item item,int index,boolean selected,boolean focus) {
+            name.setText(item.name()); quantity.setText(String.format("%,d %s remaining",item.quantity(),item.quantity()==1?"unit":"units"));
+            boolean out = item.status().equals("Out of Stock"); badge.setText(item.status());
+            badge.setBackground(out?new Color(251,225,235):new Color(255,237,217));
+            badge.setForeground(out?new Color(160,46,84):new Color(136,82,20));
+            setToolTipText(item.name()+" — "+quantity.getText()+" — "+item.status());
+            return this;
+        }
+    }
+
     static JPanel rounded(Color background, int radius) {
         return new JPanel() {
             private static final long serialVersionUID = 1L;

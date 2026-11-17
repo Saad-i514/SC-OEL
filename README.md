@@ -38,7 +38,7 @@ The two custom illustrations are bundled in `assets/`; see [artwork notes](asset
 
 ### Screenshots
 
-Actual screens from the running application after temporary test data was removed:
+Actual screens from the running application. The stock-attention detail uses explicitly labeled demo products.
 
 ![Stockroom overview](docs/screenshots/overview.png)
 
@@ -48,6 +48,8 @@ Actual screens from the running application after temporary test data was remove
 ![Inventory workspace](docs/screenshots/inventory.png)
 
 ![Session activity](docs/screenshots/activity.png)
+
+![Formatted stock-attention rows](docs/screenshots/attention.png)
 
 </details>
 

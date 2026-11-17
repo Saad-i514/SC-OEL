@@ -46,7 +46,9 @@ public final class InventoryApp {
     private final WorkspaceVisuals.StockChart stockChart = new WorkspaceVisuals.StockChart();
     private final JLabel[] stockCounts = {text("Not loaded", 13, ACCENT), text("Not loaded", 13, MUTED), text("Not loaded", 13, RED)};
     private final JLabel attentionSummary = text("Loading stock health...", 14, INK);
-    private final DefaultListModel<String> attention = new DefaultListModel<>();
+    private final DefaultListModel<Item> attention = new DefaultListModel<>();
+    private final JLabel attentionEmpty = text("No stock alerts to show.", 13, MUTED);
+    private final JPanel attentionContent = new JPanel(new CardLayout());
     private final DefaultTableModel activityModel = new DefaultTableModel(new String[]{"Time", "Event"}, 0) {
         @Override public boolean isCellEditable(int row, int column) { return false; }
     };
@@ -116,12 +118,16 @@ public final class InventoryApp {
             tile.add(text(symbols[i],9,MUTED),BorderLayout.SOUTH); summaries.add(tile);
         }
         page.add(summaries); page.add(Box.createVerticalStrut(16));
-        var lower=new JPanel(new GridLayout(1,2,16,0)); lower.setOpaque(false); lower.setMaximumSize(new Dimension(Integer.MAX_VALUE,235)); lower.setPreferredSize(new Dimension(800,220));
+        var lower=new JPanel(new GridLayout(1,2,16,0)); lower.setOpaque(false); lower.setMaximumSize(new Dimension(Integer.MAX_VALUE,300)); lower.setPreferredSize(new Dimension(800,300));
         var health=card(); health.setLayout(new BorderLayout(12,8)); health.add(text("Stock balance",18,INK),BorderLayout.NORTH); health.add(stockChart,BorderLayout.WEST);
         var legend=vertical(); legend.add(Box.createVerticalStrut(12)); for(int i=0;i<3;i++) { legend.add(text(Item.STATUSES.get(i),12,MUTED)); legend.add(Box.createVerticalStrut(5)); legend.add(stockCounts[i]); legend.add(Box.createVerticalStrut(12)); } health.add(legend,BorderLayout.CENTER); lower.add(health);
         var needs=card(); needs.setLayout(new BorderLayout(0,10)); needs.add(attentionSummary,BorderLayout.NORTH);
-        var list=new JList<>(attention); list.setFont(new Font("Segoe UI",Font.PLAIN,13)); list.setFixedCellHeight(29); list.setForeground(INK); list.setFocusable(false);
-        var attentionScroll=new JScrollPane(list); attentionScroll.setBorder(null); needs.add(attentionScroll,BorderLayout.CENTER);
+        var list=new JList<>(attention); list.setCellRenderer(new WorkspaceVisuals.AttentionRow()); list.setFixedCellHeight(56); list.setVisibleRowCount(3); list.setFocusable(false);
+        list.setBackground(Color.WHITE); list.getAccessibleContext().setAccessibleName("Products needing stock attention");
+        var attentionScroll=new JScrollPane(list); attentionScroll.setBorder(null); attentionScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        attentionScroll.setPreferredSize(new Dimension(0,168)); attentionScroll.getVerticalScrollBar().setUnitIncrement(56);
+        var rows=new JPanel(new BorderLayout()); rows.setOpaque(false); rows.add(attentionScroll,BorderLayout.NORTH);
+        attentionContent.setOpaque(false); attentionContent.add(rows,"rows"); attentionContent.add(attentionEmpty,"empty"); needs.add(attentionContent,BorderLayout.CENTER);
         var review=button("Review low-stock items  →",new Color(245,237,220),new Color(128,85,17)); review.addActionListener(event->{ search.setText(""); filter.setSelectedItem("Low Stock"); showPage("Inventory"); }); needs.add(review,BorderLayout.SOUTH); lower.add(needs); page.add(lower);
         var scroll=new JScrollPane(page); scroll.setBorder(null); scroll.getViewport().setBackground(CANVAS); scroll.getVerticalScrollBar().setUnitIncrement(20);
         var wrapper=new JPanel(new BorderLayout()); wrapper.setOpaque(false); wrapper.add(scroll); return wrapper;
@@ -269,9 +275,10 @@ public final class InventoryApp {
                     long[] totals = summarize(items); for (int i = 0; i < totals.length; i++) metrics[i].setText(String.format("%,d", totals[i]));
                     stockChart.setValues(totals[0]-totals[2]-totals[3],totals[2],totals[3]);
                     long[] stock={totals[0]-totals[2]-totals[3],totals[2],totals[3]}; for(int i=0;i<3;i++) stockCounts[i].setText(stock[i]+" products");
-                    attention.clear(); for(Item item:items) if(!item.status().equals("In Stock")) attention.addElement(item.name()+"  /  "+item.quantity()+" units");
+                    attention.clear(); for(Item item:items) if(!item.status().equals("In Stock")) attention.addElement(item);
                     attentionSummary.setText(attention.isEmpty()?"No items marked for attention":"Items needing attention");
-                    if(attention.isEmpty()) attention.addElement(items.isEmpty()?"Add products to start tracking stock.":"All products are marked In Stock.");
+                    attentionEmpty.setText(items.isEmpty()?"Add products to start tracking stock.":"All products are marked In Stock.");
+                    ((CardLayout)attentionContent.getLayout()).show(attentionContent,attention.isEmpty()?"empty":"rows");
                     recordActivity(result);
                     reset(); applyFilter(); message.setText(result); connection.setText("SYNCED  " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))); connection.setForeground(ACCENT);
                 } catch (Exception e) {

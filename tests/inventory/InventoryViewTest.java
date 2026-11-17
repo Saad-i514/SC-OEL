@@ -79,6 +79,15 @@ public final class InventoryViewTest {
             var canvas = new java.awt.image.BufferedImage(200, 44, java.awt.image.BufferedImage.TYPE_INT_ARGB);
             var graphics = canvas.createGraphics(); input.paint(graphics); select.paint(graphics); graphics.dispose();
             assert input.getText().equals("12") && select.getSelectedItem().equals("Low Stock");
+            var attention = new WorkspaceVisuals.AttentionRow();
+            var alerts = new javax.swing.JList<Item>();
+            attention.getListCellRendererComponent(alerts,new Item(1,"Long product "+"x".repeat(100),1,"Low Stock"),0,false,false);
+            assert attention.getToolTipText().contains("1 unit remaining");
+            attention.getListCellRendererComponent(alerts,new Item(2,"Kitchen Towels (Demo)",0,"Out of Stock"),1,false,false);
+            assert attention.getToolTipText().equals("Kitchen Towels (Demo) — 0 units remaining — Out of Stock");
+            attention.setSize(350,56); attention.doLayout();
+            var rowImage = new java.awt.image.BufferedImage(350,56,java.awt.image.BufferedImage.TYPE_INT_ARGB);
+            var rowGraphics = rowImage.createGraphics(); attention.paint(rowGraphics); rowGraphics.dispose();
         });
         for (String asset : List.of("warehouse.png", "activity.png")) {
             var image = javax.imageio.ImageIO.read(java.nio.file.Path.of("assets", asset).toFile());
