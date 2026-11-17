@@ -1,0 +1,6 @@
+/build/
+/lib/
+/.env
+/db.properties
+/supabase/.temp/
+*.log
