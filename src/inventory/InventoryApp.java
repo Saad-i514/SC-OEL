@@ -17,9 +17,9 @@ import java.util.regex.Pattern;
 /** Inventory workspace with background persistence and accessible form controls.
  * @author OEL Team */
 public final class InventoryApp {
-    private static final Color NAVY = new Color(19, 32, 51), CANVAS = new Color(244, 247, 250),
-            INK = new Color(29, 43, 62), MUTED = new Color(97, 112, 132), LINE = new Color(222, 229, 237),
-            TEAL = new Color(0, 112, 98), RED = new Color(173, 47, 57);
+    private static final Color NAVY = new Color(31, 23, 49), CANVAS = new Color(244, 240, 249),
+            INK = new Color(43, 32, 69), MUTED = new Color(111, 100, 130), LINE = new Color(221, 212, 234),
+            ACCENT = new Color(116, 68, 207), RED = new Color(173, 47, 57);
     private final JFrame frame = new JFrame("Stockroom | Inventory Workspace");
     private final DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Item name", "Quantity", "Stock status"}, 0) {
         @Override public boolean isCellEditable(int row, int column) { return false; }
@@ -27,15 +27,15 @@ public final class InventoryApp {
     };
     private final JTable table = new JTable(model);
     private final TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-    private final JTextField name = new JTextField(), quantity = new JTextField("0"), search = new JTextField();
-    private final JComboBox<String> status = new JComboBox<>(Item.STATUSES.toArray(String[]::new));
-    private final JComboBox<String> filter = new JComboBox<>(new String[]{"All statuses", "In Stock", "Low Stock", "Out of Stock"});
+    private final JTextField name = WorkspaceVisuals.input(""), quantity = WorkspaceVisuals.input("0"), search = WorkspaceVisuals.input("");
+    private final JComboBox<String> status = WorkspaceVisuals.select(Item.STATUSES.toArray(String[]::new));
+    private final JComboBox<String> filter = WorkspaceVisuals.select(new String[]{"All statuses", "In Stock", "Low Stock", "Out of Stock"});
     private final JLabel message = text("Connecting to your inventory...", 12, MUTED),
             connection = text("CONNECTING", 11, MUTED), count = text("Loading records", 12, MUTED),
             editorTitle = text("New item", 21, INK), editorHint = text("Add a product to your inventory.", 12, MUTED),
             emptyTitle = text("Loading inventory", 20, INK), emptyHint = text("Please wait while records are retrieved.", 13, MUTED);
     private final JLabel[] metrics = {text("—", 30, INK), text("—", 30, INK), text("—", 30, INK), text("—", 30, INK)};
-    private final JButton add = button("Add item", TEAL, Color.WHITE), update = button("Save changes", TEAL, Color.WHITE),
+    private final JButton add = button("Add item", ACCENT, Color.WHITE), update = button("Save changes", ACCENT, Color.WHITE),
             delete = button("Delete item", new Color(255, 241, 242), RED), refresh = button("Refresh", Color.WHITE, INK),
             clear = button("New item", NAVY, Color.WHITE), cancel = button("Clear selection", Color.WHITE, MUTED);
     private final CardLayout contentCards = new CardLayout();
@@ -44,7 +44,7 @@ public final class InventoryApp {
     private final java.util.Map<String, JButton> navigation = new java.util.LinkedHashMap<>();
     private final JLabel pageTitle = text("Overview", 28, INK), pageSubtitle = text("Your store, at a glance.", 13, MUTED);
     private final WorkspaceVisuals.StockChart stockChart = new WorkspaceVisuals.StockChart();
-    private final JLabel[] stockCounts = {text("Not loaded", 13, TEAL), text("Not loaded", 13, MUTED), text("Not loaded", 13, RED)};
+    private final JLabel[] stockCounts = {text("Not loaded", 13, ACCENT), text("Not loaded", 13, MUTED), text("Not loaded", 13, RED)};
     private final JLabel attentionSummary = text("Loading stock health...", 14, INK);
     private final DefaultListModel<String> attention = new DefaultListModel<>();
     private final DefaultTableModel activityModel = new DefaultTableModel(new String[]{"Time", "Event"}, 0) {
@@ -70,7 +70,7 @@ public final class InventoryApp {
         pages.add(inventory, "Inventory"); pages.add(activityPage(), "Activity"); workspace.add(pages, BorderLayout.CENTER);
         var footer = new JPanel(new BorderLayout(12, 0)); footer.setOpaque(false); footer.add(message, BorderLayout.CENTER); footer.add(connection, BorderLayout.EAST);
         workspace.add(footer, BorderLayout.SOUTH); root.add(workspace, BorderLayout.CENTER);
-        wireActions(); frame.setContentPane(root);
+        wireActions(); WorkspaceVisuals.styleScrollbars(root); frame.setContentPane(root);
         Rectangle screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         frame.setSize(Math.min(1360, screen.width - 32), Math.min(900, screen.height - 32));
         frame.setMinimumSize(new Dimension(Math.min(1080, screen.width), Math.min(640, screen.height)));
@@ -82,33 +82,39 @@ public final class InventoryApp {
         top.add(Box.createVerticalStrut(46)); top.add(text("WORKSPACE", 10, new Color(156, 174, 197))); top.add(Box.createVerticalStrut(15));
         String[] labels = {"01   Overview", "02   Inventory", "03   Activity"}; String[] names = {"Overview", "Inventory", "Activity"};
         for (int i=0; i<names.length; i++) {
-            String page = names[i]; var nav = button(labels[i], NAVY, new Color(181,195,212)); nav.setHorizontalAlignment(SwingConstants.LEFT);
+            String page = names[i]; var nav = button(labels[i], NAVY, new Color(191,177,209)); nav.setHorizontalAlignment(SwingConstants.LEFT);
             nav.setAlignmentX(Component.LEFT_ALIGNMENT); nav.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46)); nav.addActionListener(event -> showPage(page));
             navigation.put(page, nav); top.add(nav); top.add(Box.createVerticalStrut(9));
         }
         panel.add(top, BorderLayout.NORTH);
         var bottom = vertical();
-        var motion = new JCheckBox("Animations", true); motion.setOpaque(false); motion.setForeground(new Color(181,195,212)); motion.setFont(new Font("Segoe UI",Font.PLAIN,11));
-        motion.setAlignmentX(Component.LEFT_ALIGNMENT); motion.addActionListener(event -> { pages.setAnimated(motion.isSelected()); UIManager.put("Stockroom.motion", motion.isSelected()); });
-        bottom.add(motion); bottom.add(Box.createVerticalStrut(20)); bottom.add(text("STORE OPERATIONS", 10, new Color(156,174,197))); bottom.add(Box.createVerticalStrut(7)); bottom.add(text("Your daily control center",12,Color.WHITE));
+        var motion = new JCheckBox("Animations", true); motion.setOpaque(false); motion.setForeground(new Color(191,177,209)); motion.setFont(new Font("Segoe UI",Font.PLAIN,11));
+        motion.setAlignmentX(Component.LEFT_ALIGNMENT); motion.addActionListener(event -> { pages.setAnimated(motion.isSelected()); WorkspaceVisuals.setMotion(motion.isSelected(), frame.getContentPane()); });
+        bottom.add(motion); bottom.add(Box.createVerticalStrut(20)); bottom.add(text("STORE OPERATIONS", 10, new Color(166,148,190))); bottom.add(Box.createVerticalStrut(7)); bottom.add(text("Your daily control center",12,Color.WHITE));
         panel.add(bottom,BorderLayout.SOUTH); return panel;
     }
     private void showPage(String page) {
         currentPage=page; pages.showPage(page); pageTitle.setText(page.equals("Inventory") ? "Product inventory" : page.equals("Activity") ? "Workspace activity" : "Overview");
         pageSubtitle.setText(page.equals("Inventory") ? "Organize your catalog. Keep every quantity accurate." : page.equals("Activity") ? "A clear record of actions in this session." : "Your store, at a glance. Make room for a better day.");
-        navigation.forEach((key,nav) -> { nav.setBackground(key.equals(page) ? new Color(39,62,77) : NAVY); nav.setForeground(key.equals(page) ? new Color(133,231,204) : new Color(181,195,212)); });
+        navigation.forEach((key,nav) -> { nav.setBackground(key.equals(page) ? new Color(73,47,110) : NAVY); nav.setForeground(key.equals(page) ? new Color(230,204,255) : new Color(191,177,209)); });
         controls();
     }
     private JPanel overview() {
         var page = vertical();
-        var hero = WorkspaceVisuals.rounded(new Color(231,244,239),22); hero.setLayout(new BorderLayout(10,0)); hero.setBorder(new EmptyBorder(22,26,22,16)); hero.setMaximumSize(new Dimension(Integer.MAX_VALUE,210));
-        var copy = vertical(); copy.add(text("LESS GUESSWORK. MORE CLARITY.",10,TEAL)); copy.add(Box.createVerticalStrut(10));
+        var hero = WorkspaceVisuals.rounded(new Color(236,224,250),22); hero.setLayout(new BorderLayout(10,0)); hero.setBorder(new EmptyBorder(22,26,22,16)); hero.setMaximumSize(new Dimension(Integer.MAX_VALUE,210));
+        var copy = vertical(); copy.add(text("LESS GUESSWORK. MORE CLARITY.",10,ACCENT)); copy.add(Box.createVerticalStrut(10));
         copy.add(text("Good stock. Great days.",29,INK)); copy.add(Box.createVerticalStrut(8)); copy.add(text("Keep your shelves ready for what comes next.",13,MUTED)); copy.add(Box.createVerticalStrut(17));
-        var manage=button("Explore inventory  →",TEAL,Color.WHITE); manage.addActionListener(event->showPage("Inventory")); copy.add(manage); hero.add(copy,BorderLayout.CENTER); hero.add(new WorkspaceVisuals.Artwork("warehouse.png"),BorderLayout.EAST);
+        var manage=button("Explore inventory  →",ACCENT,Color.WHITE); manage.addActionListener(event->showPage("Inventory")); copy.add(manage); hero.add(copy,BorderLayout.CENTER); hero.add(new WorkspaceVisuals.Artwork("warehouse.png"),BorderLayout.EAST);
         page.add(hero); page.add(Box.createVerticalStrut(16));
-        var summaries=new JPanel(new GridLayout(1,4,12,0)); summaries.setOpaque(false); summaries.setMaximumSize(new Dimension(Integer.MAX_VALUE,112));
+        var summaries=new JPanel(new GridLayout(1,4,12,0)); summaries.setOpaque(false); summaries.setMaximumSize(new Dimension(Integer.MAX_VALUE,128));
         String[] labels={"TOTAL PRODUCTS","UNITS ON HAND","LOW STOCK","OUT OF STOCK"};
-        for(int i=0;i<metrics.length;i++) { var tile=card(); tile.setLayout(new BorderLayout(0,8)); tile.add(text(labels[i],10,MUTED),BorderLayout.NORTH); metrics[i].setFont(metrics[i].getFont().deriveFont(Font.BOLD)); tile.add(metrics[i],BorderLayout.CENTER); summaries.add(tile); }
+        Color[] tileColors={new Color(231,218,252),new Color(222,231,255),new Color(255,232,212),new Color(251,222,235)};
+        String[] symbols={"CATALOG", "VOLUME", "ATTENTION", "AVAILABILITY"};
+        for(int i=0;i<metrics.length;i++) {
+            var tile=WorkspaceVisuals.rounded(tileColors[i],24); tile.setBorder(new EmptyBorder(16,18,16,18)); tile.setLayout(new BorderLayout(0,7));
+            tile.add(text(labels[i],11,INK),BorderLayout.NORTH); metrics[i].setFont(metrics[i].getFont().deriveFont(Font.BOLD,32f)); tile.add(metrics[i],BorderLayout.CENTER);
+            tile.add(text(symbols[i],9,MUTED),BorderLayout.SOUTH); summaries.add(tile);
+        }
         page.add(summaries); page.add(Box.createVerticalStrut(16));
         var lower=new JPanel(new GridLayout(1,2,16,0)); lower.setOpaque(false); lower.setMaximumSize(new Dimension(Integer.MAX_VALUE,235)); lower.setPreferredSize(new Dimension(800,220));
         var health=card(); health.setLayout(new BorderLayout(12,8)); health.add(text("Stock balance",18,INK),BorderLayout.NORTH); health.add(stockChart,BorderLayout.WEST);
@@ -122,7 +128,7 @@ public final class InventoryApp {
     }
     private JPanel activityPage() {
         var page=new JPanel(new BorderLayout(0,18)); page.setOpaque(false);
-        var banner=WorkspaceVisuals.rounded(new Color(231,244,239),18); banner.setLayout(new BorderLayout()); banner.setBorder(new EmptyBorder(14,24,14,20));
+        var banner=WorkspaceVisuals.rounded(new Color(236,224,250),18); banner.setLayout(new BorderLayout()); banner.setBorder(new EmptyBorder(14,24,14,20));
         var copy=vertical(); copy.add(text("Every action, accounted for.",24,INK)); copy.add(Box.createVerticalStrut(10)); copy.add(text("Loads, saves and errors from this open workspace.",13,MUTED)); copy.add(Box.createVerticalStrut(6)); copy.add(text("Session-only history · resets when the application closes",11,MUTED));
         banner.add(copy,BorderLayout.CENTER); var art=new WorkspaceVisuals.Artwork("activity.png"); art.setPreferredSize(new Dimension(175,105)); banner.add(art,BorderLayout.EAST); page.add(banner,BorderLayout.NORTH);
         var panel=card(); panel.setLayout(new BorderLayout(0,12)); panel.add(text("Session timeline",18,INK),BorderLayout.NORTH);
@@ -139,7 +145,7 @@ public final class InventoryApp {
         var filterGroup = new JPanel(new BorderLayout(0, 6)); filterGroup.setOpaque(false); var filterLabel = text("Stock status", 12, MUTED); filterLabel.setLabelFor(filter); filterGroup.add(filterLabel, BorderLayout.NORTH); filterGroup.add(filter, BorderLayout.CENTER); tools.add(filterGroup, BorderLayout.EAST);
         header.add(tools, BorderLayout.CENTER); panel.add(header, BorderLayout.NORTH);
         table.setRowSorter(sorter); table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); table.setRowHeight(48); table.setShowGrid(false); table.setIntercellSpacing(new Dimension(0, 0));
-        table.setSelectionBackground(new Color(225, 242, 237)); table.setSelectionForeground(INK); table.setBackground(Color.WHITE); table.setFillsViewportHeight(true);
+        table.setSelectionBackground(new Color(237, 228, 252)); table.setSelectionForeground(INK); table.setBackground(Color.WHITE); table.setFillsViewportHeight(true);
         table.getTableHeader().setReorderingAllowed(false); table.getTableHeader().setPreferredSize(new Dimension(0, 40)); table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
         table.setDefaultRenderer(Object.class, new ItemCell()); table.setDefaultRenderer(Long.class, new ItemCell()); table.setDefaultRenderer(Integer.class, new ItemCell());
         table.getColumnModel().getColumn(0).setMaxWidth(65); table.getColumnModel().getColumn(2).setPreferredWidth(80); table.getColumnModel().getColumn(3).setPreferredWidth(135);
@@ -156,10 +162,10 @@ public final class InventoryApp {
         var scroll = new JScrollPane(fields); scroll.setBorder(null); scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.getViewport().setBackground(Color.WHITE); scroll.getVerticalScrollBar().setUnitIncrement(18); panel.add(scroll, BorderLayout.CENTER);
         var actions = vertical();
-        for (var action : List.of(add, update)) { action.setAlignmentX(Component.LEFT_ALIGNMENT); action.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38)); actions.add(action); }
+        for (var action : List.of(add, update)) { action.setAlignmentX(Component.LEFT_ALIGNMENT); action.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44)); actions.add(action); }
         actions.add(Box.createVerticalStrut(8));
         var secondary = new JPanel(new GridLayout(1, 2, 8, 0)); secondary.setOpaque(false); secondary.setAlignmentX(Component.LEFT_ALIGNMENT);
-        cancel.setText("Clear"); secondary.add(cancel); secondary.add(delete); secondary.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36)); actions.add(secondary);
+        cancel.setText("Clear"); secondary.add(cancel); secondary.add(delete); secondary.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40)); actions.add(secondary);
         panel.add(actions, BorderLayout.SOUTH); return panel;
     }
     private void wireActions() {
@@ -189,10 +195,10 @@ public final class InventoryApp {
     }
     private static void field(JPanel panel, String title, JComponent field) {
         var label = text(title, 12, INK); label.setLabelFor(field); panel.add(label); panel.add(Box.createVerticalStrut(7));
-        field.setAlignmentX(Component.LEFT_ALIGNMENT); field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38)); field.setPreferredSize(new Dimension(220, 38)); panel.add(field); panel.add(Box.createVerticalStrut(12));
+        field.setAlignmentX(Component.LEFT_ALIGNMENT); field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44)); field.setPreferredSize(new Dimension(220, 44)); panel.add(field); panel.add(Box.createVerticalStrut(12));
     }
     private static JPanel vertical() { var panel = new JPanel(); panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); panel.setOpaque(false); return panel; }
-    private static JPanel card() { var panel=WorkspaceVisuals.rounded(Color.WHITE,18); panel.setBorder(new EmptyBorder(18,18,18,18)); return panel; }
+    private static JPanel card() { var panel=WorkspaceVisuals.rounded(Color.WHITE,24); panel.setBorder(new EmptyBorder(18,18,18,18)); return panel; }
     private static JLabel text(String value, int size, Color color) { var label = new JLabel(value); label.setFont(new Font("Segoe UI", Font.PLAIN, size)); label.setForeground(color); label.setAlignmentX(Component.LEFT_ALIGNMENT); return label; }
     private static JButton button(String title, Color background, Color foreground) { return WorkspaceVisuals.button(title, background, foreground); }
     private static final class ItemCell extends DefaultTableCellRenderer {
@@ -200,10 +206,10 @@ public final class InventoryApp {
         @Override public Component getTableCellRendererComponent(JTable grid, Object value, boolean selected, boolean focus, int row, int column) {
             super.getTableCellRendererComponent(grid, value, selected, focus, row, column);
             setBorder(new EmptyBorder(0, 12, 0, 12)); setFont(new Font("Segoe UI", column == 1 ? Font.BOLD : Font.PLAIN, 12));
-            setBackground(selected ? grid.getSelectionBackground() : row % 2 == 0 ? Color.WHITE : new Color(249, 251, 253)); setForeground(INK);
+            setBackground(selected ? grid.getSelectionBackground() : row % 2 == 0 ? Color.WHITE : new Color(251, 249, 254)); setForeground(INK);
             setHorizontalAlignment(column == 2 ? SwingConstants.RIGHT : SwingConstants.LEFT);
             if (column == 3) {
-                setForeground("In Stock".equals(value) ? TEAL : "Low Stock".equals(value) ? new Color(143, 91, 7) : RED);
+                setForeground("In Stock".equals(value) ? ACCENT : "Low Stock".equals(value) ? new Color(143, 91, 7) : RED);
                 setText("●  " + value);
             }
             return this;
@@ -267,7 +273,7 @@ public final class InventoryApp {
                     attentionSummary.setText(attention.isEmpty()?"No items marked for attention":"Items needing attention");
                     if(attention.isEmpty()) attention.addElement(items.isEmpty()?"Add products to start tracking stock.":"All products are marked In Stock.");
                     recordActivity(result);
-                    reset(); applyFilter(); message.setText(result); connection.setText("SYNCED  " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))); connection.setForeground(TEAL);
+                    reset(); applyFilter(); message.setText(result); connection.setText("SYNCED  " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))); connection.setForeground(ACCENT);
                 } catch (Exception e) {
                     message.setForeground(RED); message.setText(result == null ? "Request failed. Refresh before retrying a write." : result + " Refresh failed; click Refresh.");
                     recordActivity(result == null ? "Request failed. Outcome may be unknown; refresh before retrying." : result + " Refresh failed.");
@@ -287,9 +293,9 @@ public final class InventoryApp {
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                 var font = new javax.swing.plaf.FontUIResource("Segoe UI", Font.PLAIN, 13);
                 for (Object key : java.util.Collections.list(UIManager.getDefaults().keys())) if (UIManager.get(key) instanceof javax.swing.plaf.FontUIResource) UIManager.put(key, font);
-                UIManager.put("Button.select", new Color(203, 223, 217)); UIManager.put("Button.disabledText", MUTED);
+                UIManager.put("Button.select", new Color(222, 203, 247)); UIManager.put("Button.disabledText", MUTED);
                 UIManager.put("TextField.border", BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(LINE), new EmptyBorder(8, 10, 8, 10)));
-                UIManager.put("ComboBox.background", Color.WHITE); UIManager.put("TableHeader.background", CANVAS);
+                UIManager.put("ComboBox.background", new Color(249,247,253)); UIManager.put("TableHeader.background", CANVAS);
                 new InventoryApp(new InventoryRepository());
             } catch (Exception e) { JOptionPane.showMessageDialog(null, "Cannot start. Copy db.properties.example to db.properties and configure the connection.", "Setup required", JOptionPane.ERROR_MESSAGE); }
         });

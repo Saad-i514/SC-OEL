@@ -46,3 +46,8 @@ The direct IPv6 endpoint was unreachable. The supplied Tokyo session-pooler endp
 - No student IDE demonstration or Javadoc browser review is claimed. Broader OS/display-scaling and assistive-technology testing remain outstanding.
 
 Actual screenshots of the final empty Overview/Inventory and initial session Activity are included in `docs/screenshots/`.
+
+
+## Magnetic controls and palette follow-up
+
+Compilation, validation and view tests passed after the colour/control update. New checks cover bounded magnetic offsets, unchanged component hit bounds, action invocation, disabled-button suppression, reduced-motion reset, and styled input/dropdown painting with preserved values. The running Inventory page was inspected for rounded fields, dropdowns, card depth and contrast. Database code was unchanged; live CRUD was not repeated for the styling-only update.

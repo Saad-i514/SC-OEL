@@ -24,7 +24,7 @@ Stockroom pairs a Java Swing interface with persistent PostgreSQL storage, valid
 
 ## The workspace
 
-Stockroom has three connected pages, with illustrated banners, rounded cards, subtle page transitions, and animated button hover states:
+Stockroom has three connected pages, with an indigo/violet/peach palette, illustrated banners, softly shaded cards, custom rounded fields and dropdowns, slim scrollbars, and subtle page transitions:
 
 | Page | Purpose |
 | :--- | :--- |
@@ -32,7 +32,7 @@ Stockroom has three connected pages, with illustrated banners, rounded cards, su
 | **Inventory** | Search by name, filter by stock status, sort columns, and manage items in a dedicated editor. |
 | **Activity** | Timestamped loads, save results, and errors from the current session. |
 
-Use the sidebar to switch pages. The **Animations** checkbox disables page transitions and animated hover entry. Stock summaries describe the entire loaded inventory, even when the Inventory page is filtered. Activity resets when the app closes; it is not a persistent audit log.
+Use the sidebar to switch pages. The **Animations** checkbox disables page transitions and magnetic button movement. Buttons gently follow the pointer inside a fixed click target and return to center when the pointer leaves; keyboard focus remains visible. Stock summaries describe the entire loaded inventory, even when the Inventory page is filtered. Activity resets when the app closes; it is not a persistent audit log.
 
 The two custom illustrations are bundled in `assets/`; see [artwork notes](assets/README.md) for generation details. No images are downloaded at runtime.
 

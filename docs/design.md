@@ -12,3 +12,10 @@ Overview, Inventory, and Activity use CardLayout. Navigation does not fetch data
 WorkspaceVisuals uses Swing/Java2D for rounded surfaces, hover highlights, and a 220 ms fade/slide transition. Timers stop when the animation finishes or the component is removed. The sidebar animation control supports reduced motion. Artwork is loaded from bundled PNGs; missing files do not block CRUD, and automated checks verify the bundled assets are readable.
 
 Activity records only this session's operation results, newest first. It is explicitly not a persistent audit log. No mock sales, revenue, or trend data is shown. Database credentials and security boundaries remain unchanged.
+
+
+## Colour and interaction refinement
+
+The workspace uses indigo navigation, violet actions, lavender input surfaces, and peach/rose summary accents. Cards have gradient fills, soft shadows, and thin outlines. Text inputs and dropdowns retain native Swing editing/selection behaviour with custom rounded painting. Scrollbars use slim rounded thumbs.
+
+Magnetic buttons animate their painted surface and label toward the pointer by at most 3 px horizontally and 2 px vertically. Component bounds and click targets never move. Disabled buttons reset immediately; turning Animations off resets all magnetic buttons and disables attraction. Keyboard actions and visible focus rings are preserved. Timer cleanup remains tied to component removal.
