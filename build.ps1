@@ -16,6 +16,8 @@ if ($Task -in 'test','integration') {
     if ($LASTEXITCODE -ne 0) { throw 'Test compilation failed' }
     & java -ea -cp "build;$driver" inventory.ItemTest
     if ($LASTEXITCODE -ne 0) { throw 'Validation tests failed' }
+    & java -ea '-Djava.awt.headless=true' -cp "build;$driver" inventory.InventoryViewTest
+    if ($LASTEXITCODE -ne 0) { throw 'Inventory view tests failed' }
     if ($Task -eq 'integration') {
         & java -ea -cp "build;$driver" inventory.DatabaseTest
         if ($LASTEXITCODE -ne 0) { throw 'Database tests failed' }
