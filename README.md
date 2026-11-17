@@ -22,6 +22,35 @@ A focused desktop application for managing items, quantities, and stock status.
 
 Stockroom pairs a Java Swing interface with persistent PostgreSQL storage, validated input, and a Git history that records development feature by feature. Built for the Software Construction OEL, it demonstrates Java classes, JDBC, background tasks, database constraints, automated checks, and generated API documentation.
 
+## The workspace
+
+Stockroom has three connected pages, with illustrated banners, rounded cards, subtle page transitions, and animated button hover states:
+
+| Page | Purpose |
+| :--- | :--- |
+| **Overview** | Live product/unit totals, stock-distribution chart, and items marked for attention. |
+| **Inventory** | Search by name, filter by stock status, sort columns, and manage items in a dedicated editor. |
+| **Activity** | Timestamped loads, save results, and errors from the current session. |
+
+Use the sidebar to switch pages. The **Animations** checkbox disables page transitions and animated hover entry. Stock summaries describe the entire loaded inventory, even when the Inventory page is filtered. Activity resets when the app closes; it is not a persistent audit log.
+
+The two custom illustrations are bundled in `assets/`; see [artwork notes](assets/README.md) for generation details. No images are downloaded at runtime.
+
+### Screenshots
+
+Actual screens from the running application after temporary test data was removed:
+
+![Stockroom overview](docs/screenshots/overview.png)
+
+<details>
+<summary>Inventory and Activity pages</summary>
+
+![Inventory workspace](docs/screenshots/inventory.png)
+
+![Session activity](docs/screenshots/activity.png)
+
+</details>
+
 ## Features
 
 | Feature | What it does |
@@ -92,7 +121,7 @@ The configuration script applies pending migrations through the Supabase CLI. In
 2. Select a table row to load its details into the editor.
 3. Edit the fields and select **Save changes**.
 4. Select **Delete item** and confirm to remove the record.
-5. Use **Refresh** to reload records or **Clear selection** to reset the editor.
+5. Use **Refresh** to reload records, **Clear** to reset the editor, or **New item** to open a fresh form.
 
 Names are trimmed and must contain 1–200 characters. Quantities must be whole numbers from `0` to `2147483647`.
 
@@ -122,6 +151,8 @@ Open the project in IntelliJ IDEA, Eclipse, or NetBeans. Select **JDK 21**, mark
 | `InventoryApp` | Table, editor, selection, and background operations. |
 | SQL migration | Table definition, constraints, and API access restrictions. |
 
+`WorkspaceVisuals` draws the illustrations, stock chart, rounded surfaces, and short animations using Swing and Java2D, without additional UI dependencies.
+
 Fetched records are held in an `ArrayList` snapshot. PostgreSQL stores the durable inventory; connection failures do not silently switch to temporary storage.
 
 ### Database model
@@ -142,6 +173,7 @@ SC-OEL/
 ├── src/inventory/          # Model, repository, and Swing application
 ├── tests/inventory/        # Validation and live CRUD checks
 ├── supabase/migrations/    # Versioned database schema
+├── assets/                # Bundled warehouse and activity illustrations
 ├── certs/                 # Public CA certificate and its source
 ├── docs/
 │   ├── javadoc/           # Generated HTML API documentation
@@ -167,7 +199,9 @@ SC-OEL/
 | Live add, list, update, and delete | ✅ Passed |
 | Updates/deletions of missing records | ✅ Passed |
 | Javadoc generation | ✅ Passed |
-| GUI walkthrough and Javadoc browser review | ⏳ Pending |
+| Multi-page navigation, search, selection, and live save | ✅ Passed |
+| Summary/filter/page/chart/artwork checks | ✅ Passed |
+| Javadoc browser review | ⏳ Pending |
 
 These are recorded local test results, not automated CI status. See the [verification record](docs/verification.md) for details and the manual demonstration checklist.
 
@@ -205,8 +239,9 @@ Published at [Saad-i514/SC-OEL](https://github.com/Saad-i514/SC-OEL) on `main`.
 - [x] Validation and live CRUD checks
 - [x] Generated Javadoc included in the repository
 - [ ] Add the two group members' details to the final report
-- [ ] Complete the IDE demonstration and GUI walkthrough
-- [ ] Capture actual application screenshots
+- [x] Check page navigation, search, selection, and a live save in the GUI
+- [ ] Complete the student IDE demonstration
+- [x] Capture actual application screenshots
 - [ ] Review generated Javadoc in a browser
 - [ ] Prepare the detailed report PDF and credential-free source ZIP
 

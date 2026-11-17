@@ -9,7 +9,7 @@
 | Javadoc generation | PASS |
 | Supabase CLI migration | PASS: migration applied through Supabase CLI using session pooler |
 | Live add/view/update/delete and missing-row checks | PASS: live CRUD and missing-row handling; test record removed |
-| GUI visual walkthrough and empty-state demonstration | Not yet verified |
+| GUI visual walkthrough and empty-state demonstration | PASS: empty/populated workspace, navigation, search, selection and live save checked |
 | Javadoc browser review | Not yet verified |
 | GitHub push | PASS: published to Saad-i514/SC-OEL on main |
 
@@ -34,3 +34,15 @@ Credentials live only in ignored db.properties. The migration enables RLS and re
 ## Connection verification follow-up
 
 The direct IPv6 endpoint was unreachable. The supplied Tokyo session-pooler endpoint resolved that issue. Java required Supabase's CA certificate; the committed public certificate now enables `sslmode=verify-full` (certificate chain and hostname verification). `./build.ps1 integration` completed successfully with exit code 0. Credentials remain in ignored db.properties.
+
+
+## Multi-page UI verification
+
+- Compiled with `-Xlint:all`; validation and view-logic checks passed.
+- View checks cover empty summaries, sums exceeding integer range, literal/case-insensitive search, combined filters, sorted row identities, page selection with reduced motion, empty/populated chart painting, and decoding both bundled illustrations.
+- Visually inspected the empty and populated interfaces at the available desktop size; the window fits the usable screen and the item form scrolls while its action buttons remain visible.
+- Navigated Overview, Inventory, and Activity; searched a temporary record, selected a row, saved through the UI, and confirmed the save in Activity.
+- Live JDBC CRUD regression passed. Temporary UI demonstration records were removed by their exact generated IDs.
+- No student IDE demonstration or Javadoc browser review is claimed. Broader OS/display-scaling and assistive-technology testing remain outstanding.
+
+Actual screenshots of the final empty Overview/Inventory and initial session Activity are included in `docs/screenshots/`.
