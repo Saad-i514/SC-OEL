@@ -7,13 +7,13 @@
 | Blank name, negative, nonnumeric, fractional and overflowing quantities | PASS |
 | Invalid status and name over 200 characters | PASS |
 | Javadoc generation | PASS |
-| Supabase CLI migration | BLOCKED: supplied direct hostname resolves only to IPv6; client reports ENOTFOUND |
-| Live add/view/update/delete and missing-row checks | BLOCKED: JDBC UnknownHostException |
+| Supabase CLI migration | PASS: migration applied through Supabase CLI using session pooler |
+| Live add/view/update/delete and missing-row checks | PASS: live CRUD and missing-row handling; test record removed |
 | GUI visual walkthrough and empty-state demonstration | Not yet verified |
 | Javadoc browser review | Not yet verified |
 | GitHub push | No remote configured |
 
-Run `./build.ps1 test` for local validation. Run `./configure-db.ps1`, then `./build.ps1 integration` after configuring a reachable Supabase session-pooler address. Integration tests create one uniquely named item and clean up only that ID, never clear the inventory.
+Run `./build.ps1 test` for local validation. Run `./configure-db.ps1`, then `./build.ps1 integration` using the configured Supabase session-pooler address. Integration tests create one uniquely named item and clean up only that ID, never clear the inventory.
 
 ## Manual demo checklist
 1. Run `./build.ps1 run` from the project root.
@@ -30,3 +30,7 @@ Provide the actual two group-member names, demonstrate from an IDE, capture genu
 
 ## Security and operating scope
 Credentials live only in ignored db.properties. The migration enables RLS and revokes anonymous/authenticated API access. JDBC is intended for a trusted store operator on a private machine. Do not distribute database administrator credentials with the application; a distributed product needs user authentication and restricted database permissions. SQL values use prepared statements; failures do not silently fall back to temporary storage.
+
+## Connection verification follow-up
+
+The direct IPv6 endpoint was unreachable. The supplied Tokyo session-pooler endpoint resolved that issue. Java required Supabase's CA certificate; the committed public certificate now enables `sslmode=verify-full` (certificate chain and hostname verification). `./build.ps1 integration` completed successfully with exit code 0. Credentials remain in ignored db.properties.

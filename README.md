@@ -13,7 +13,7 @@ Java 21 Swing inventory application backed by Supabase PostgreSQL.
 Add, list, update and delete items; manually choose In Stock, Low Stock or Out of Stock; reject blank names and invalid quantities. Database operations run off the Swing event thread. No login or public distribution: this is a trusted operator desktop application.
 
 ## Run
-Install JDK 21 and run `./build.ps1 test`, then `./build.ps1 run` in PowerShell. Copy `db.properties.example` to `db.properties` and supply database credentials locally. Never commit that file. Import the directory into IntelliJ or Eclipse with Java 21; add the downloaded `lib/postgresql-42.7.14.jar` as a library and run `inventory.InventoryApp` from the project directory.
+Install JDK 21 and run `./build.ps1 test`, then `./build.ps1 run` in PowerShell. Copy `db.properties.example` to `db.properties` and supply database credentials locally. Use the Session pooler hostname and `postgres.PROJECT_REF` user when direct IPv6 connectivity is unavailable. The included Supabase public CA certificate enables full TLS verification. Never commit that file. Import the directory into IntelliJ or Eclipse with Java 21; add the downloaded `lib/postgresql-42.7.14.jar` as a library and run `inventory.InventoryApp` from the project directory.
 
 `./build.ps1 docs` generates submission-ready HTML in `docs/javadoc`.
 
