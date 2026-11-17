@@ -51,3 +51,8 @@ Actual screenshots of the final empty Overview/Inventory and initial session Act
 ## Magnetic controls and palette follow-up
 
 Compilation, validation and view tests passed after the colour/control update. New checks cover bounded magnetic offsets, unchanged component hit bounds, action invocation, disabled-button suppression, reduced-motion reset, and styled input/dropdown painting with preserved values. The running Inventory page was inspected for rounded fields, dropdowns, card depth and contrast. Database code was unchanged; live CRUD was not repeated for the styling-only update.
+
+
+## Demo inventory
+
+Executed `scripts/SeedDemo.java` with assertions enabled against Supabase. First run inserted and read back all 12 sample products (192 units). A second run inserted zero and skipped all 12 existing names, confirming repeat-run behaviour. Every sample name is marked `(Demo)`; existing inventory was not updated or deleted. Status distribution: 7 In Stock, 3 Low Stock, 2 Out of Stock.

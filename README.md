@@ -115,6 +115,17 @@ Use your project's actual pooler hostname. The session pooler on port `5432` sup
 
 The configuration script applies pending migrations through the Supabase CLI. Integration tests create a uniquely named item, verify CRUD operations, and clean up that record.
 
+## Demo inventory
+
+To populate a development database with 12 clearly labeled sample products:
+
+```powershell
+.\build.ps1 build
+java -ea -cp "build;lib/postgresql-42.7.14.jar" scripts/SeedDemo.java
+```
+
+The sample set has **192 units**, with **7 In Stock**, **3 Low Stock**, and **2 Out of Stock** products. All names end in `(Demo)`. The script skips existing sample names, preserves their edits, and never deletes inventory. Run one seed process at a time. Select **Refresh** in the app after seeding. This is optional data, not an automatic production migration.
+
 ## Using Stockroom
 
 1. Enter an item name, quantity, and status; select **Add item**.
