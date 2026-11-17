@@ -61,3 +61,8 @@ Executed `scripts/SeedDemo.java` with assertions enabled against Supabase. First
 ## Stock-attention formatting
 
 Replaced slash-separated text with typed product rows: bold name, formatted remaining quantity, aligned Low Stock/Out of Stock badge, and subtle row separators. The card shows three complete 56 px rows, with vertical scrolling and a separate empty state. Full product details remain available in tooltips. Validation and view checks passed, including singular quantities, zero stock, long names, and renderer painting. Visually verified the populated panel and captured `docs/screenshots/attention.png`.
+
+
+## Application-wide formatting review - 18 November 2026
+
+Reviewed Overview, populated Inventory, and Activity on the available desktop. Inventory now reserves readable widths for identity, quantity and stock-status columns, gives product names more space, and exposes full cell values in tooltips. Search and status-filter controls share a 44 px height. Activity uses padded alternating rows and wraps messages; row heights recalculate as messages arrive or the table width changes. Automated checks verify that long messages wrap in narrow columns and row heights shrink again when widened. Java compilation and validation/view checks passed. Database operations were unchanged and not rerun. Other display scales and smaller-than-minimum windows remain unverified.

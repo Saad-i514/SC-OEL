@@ -14,6 +14,31 @@ import java.nio.file.Path;
 final class WorkspaceVisuals {
     private WorkspaceVisuals() { }
 
+    static final class ActivityCell extends JTextArea implements javax.swing.table.TableCellRenderer {
+        private static final long serialVersionUID = 1L;
+        ActivityCell() {
+            setLineWrap(true); setWrapStyleWord(true); setFont(new Font("Segoe UI",Font.PLAIN,13));
+            setBorder(BorderFactory.createEmptyBorder(12,12,12,12));
+        }
+        @Override public Component getTableCellRendererComponent(JTable table,Object value,boolean selected,boolean focus,int row,int column) {
+            setText(String.valueOf(value)); setToolTipText(getText());
+            setForeground(new Color(43,32,69)); setBackground(selected?new Color(237,228,252):row%2==0?Color.WHITE:new Color(251,249,254));
+            return this;
+        }
+    }
+
+    static void sizeActivityRows(JTable table) {
+        for(int row=0;row<table.getRowCount();row++) {
+            int height=44;
+            for(int column=0;column<table.getColumnCount();column++) {
+                Component cell=table.prepareRenderer(table.getCellRenderer(row,column),row,column);
+                cell.setSize(Math.max(1,table.getColumnModel().getColumn(column).getWidth()),Short.MAX_VALUE);
+                height=Math.max(height,cell.getPreferredSize().height);
+            }
+            if(table.getRowHeight(row)!=height) table.setRowHeight(row,height);
+        }
+    }
+
     static final class AttentionRow extends JPanel implements ListCellRenderer<Item> {
         private static final long serialVersionUID = 1L;
         private final JLabel name = new JLabel(), quantity = new JLabel(), badge = new JLabel();

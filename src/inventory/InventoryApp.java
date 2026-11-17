@@ -139,6 +139,13 @@ public final class InventoryApp {
         banner.add(copy,BorderLayout.CENTER); var art=new WorkspaceVisuals.Artwork("activity.png"); art.setPreferredSize(new Dimension(175,105)); banner.add(art,BorderLayout.EAST); page.add(banner,BorderLayout.NORTH);
         var panel=card(); panel.setLayout(new BorderLayout(0,12)); panel.add(text("Session timeline",18,INK),BorderLayout.NORTH);
         var events=new JTable(activityModel); events.setRowHeight(44); events.setShowGrid(false); events.setFillsViewportHeight(true); events.setBackground(Color.WHITE); events.setFont(new Font("Segoe UI",Font.PLAIN,13)); events.getColumnModel().getColumn(0).setMaxWidth(110);
+        events.getColumnModel().getColumn(0).setMinWidth(90);
+        events.setDefaultRenderer(Object.class,new WorkspaceVisuals.ActivityCell());
+        Runnable sizeEvents=()->WorkspaceVisuals.sizeActivityRows(events);
+        activityModel.addTableModelListener(event->SwingUtilities.invokeLater(sizeEvents));
+        events.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override public void componentResized(java.awt.event.ComponentEvent event) { sizeEvents.run(); }
+        });
         events.getTableHeader().setFont(new Font("Segoe UI",Font.BOLD,12)); var scroll=new JScrollPane(events); scroll.setBorder(BorderFactory.createLineBorder(LINE)); panel.add(scroll); page.add(panel,BorderLayout.CENTER); return page;
     }
     private JPanel inventoryPanel() {
@@ -155,6 +162,12 @@ public final class InventoryApp {
         table.getTableHeader().setReorderingAllowed(false); table.getTableHeader().setPreferredSize(new Dimension(0, 40)); table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
         table.setDefaultRenderer(Object.class, new ItemCell()); table.setDefaultRenderer(Long.class, new ItemCell()); table.setDefaultRenderer(Integer.class, new ItemCell());
         table.getColumnModel().getColumn(0).setMaxWidth(65); table.getColumnModel().getColumn(2).setPreferredWidth(80); table.getColumnModel().getColumn(3).setPreferredWidth(135);
+        table.getColumnModel().getColumn(0).setMinWidth(48);
+        table.getColumnModel().getColumn(1).setPreferredWidth(260);
+        table.getColumnModel().getColumn(1).setMinWidth(120);
+        table.getColumnModel().getColumn(2).setMinWidth(85);
+        table.getColumnModel().getColumn(3).setMinWidth(140);
+        search.setPreferredSize(new Dimension(180,44)); filter.setPreferredSize(new Dimension(155,44));
         var scroll = new JScrollPane(table); scroll.setBorder(BorderFactory.createLineBorder(LINE)); content.add(scroll, "table");
         var empty = new JPanel(new GridBagLayout()); empty.setBackground(Color.WHITE); var copy = vertical(); copy.add(emptyTitle); copy.add(Box.createVerticalStrut(10)); copy.add(emptyHint); empty.add(copy); content.add(empty, "empty");
         panel.add(content, BorderLayout.CENTER); panel.add(text("Select a row to edit its details. Click a column heading to sort.", 11, MUTED), BorderLayout.SOUTH); return panel;
@@ -211,6 +224,7 @@ public final class InventoryApp {
         private static final long serialVersionUID = 1L;
         @Override public Component getTableCellRendererComponent(JTable grid, Object value, boolean selected, boolean focus, int row, int column) {
             super.getTableCellRendererComponent(grid, value, selected, focus, row, column);
+            setToolTipText(String.valueOf(value));
             setBorder(new EmptyBorder(0, 12, 0, 12)); setFont(new Font("Segoe UI", column == 1 ? Font.BOLD : Font.PLAIN, 12));
             setBackground(selected ? grid.getSelectionBackground() : row % 2 == 0 ? Color.WHITE : new Color(251, 249, 254)); setForeground(INK);
             setHorizontalAlignment(column == 2 ? SwingConstants.RIGHT : SwingConstants.LEFT);

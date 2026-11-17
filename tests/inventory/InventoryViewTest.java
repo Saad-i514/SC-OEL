@@ -88,6 +88,13 @@ public final class InventoryViewTest {
             attention.setSize(350,56); attention.doLayout();
             var rowImage = new java.awt.image.BufferedImage(350,56,java.awt.image.BufferedImage.TYPE_INT_ARGB);
             var rowGraphics = rowImage.createGraphics(); attention.paint(rowGraphics); rowGraphics.dispose();
+            var history = new javax.swing.JTable(new Object[][]{{"12:00:00","A long operation result that must remain readable when the activity table is narrow. ".repeat(4)}},new Object[]{"Time","Event"});
+            history.setDefaultRenderer(Object.class,new WorkspaceVisuals.ActivityCell());
+            history.getColumnModel().getColumn(0).setWidth(90); history.getColumnModel().getColumn(1).setWidth(200);
+            WorkspaceVisuals.sizeActivityRows(history); int narrowHeight=history.getRowHeight(0);
+            assert narrowHeight>44 : "Long activity entries must wrap";
+            history.getColumnModel().getColumn(1).setWidth(700); WorkspaceVisuals.sizeActivityRows(history);
+            assert history.getRowHeight(0)<narrowHeight : "Rows must shrink after widening";
         });
         for (String asset : List.of("warehouse.png", "activity.png")) {
             var image = javax.imageio.ImageIO.read(java.nio.file.Path.of("assets", asset).toFile());
