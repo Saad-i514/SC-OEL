@@ -18,10 +18,12 @@ final class WorkspaceVisuals {
         private static final long serialVersionUID = 1L;
         ActivityCell() {
             setLineWrap(true); setWrapStyleWord(true); setFont(new Font("Segoe UI",Font.PLAIN,13));
-            setBorder(BorderFactory.createEmptyBorder(12,12,12,12));
+            setBorder(BorderFactory.createEmptyBorder(18,16,18,16));
         }
         @Override public Component getTableCellRendererComponent(JTable table,Object value,boolean selected,boolean focus,int row,int column) {
-            setText(String.valueOf(value)); setToolTipText(getText());
+            setText(String.valueOf(value)); setToolTipText(String.valueOf(value));
+            setFont(new Font("Segoe UI",column==0?Font.PLAIN:Font.BOLD,column==0?12:13));
+            setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,column==1?3:0,1,0,new Color(220,203,244)),BorderFactory.createEmptyBorder(18,16,18,16)));
             setForeground(new Color(43,32,69)); setBackground(selected?new Color(237,228,252):row%2==0?Color.WHITE:new Color(251,249,254));
             return this;
         }
@@ -29,7 +31,7 @@ final class WorkspaceVisuals {
 
     static void sizeActivityRows(JTable table) {
         for(int row=0;row<table.getRowCount();row++) {
-            int height=44;
+            int height=72;
             for(int column=0;column<table.getColumnCount();column++) {
                 Component cell=table.prepareRenderer(table.getCellRenderer(row,column),row,column);
                 cell.setSize(Math.max(1,table.getColumnModel().getColumn(column).getWidth()),Short.MAX_VALUE);

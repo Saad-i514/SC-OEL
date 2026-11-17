@@ -51,6 +51,8 @@ Actual screens from the running application. The stock-attention detail uses exp
 
 ![Formatted stock-attention rows](docs/screenshots/attention.png)
 
+![Stock balance with counts and percentages](docs/screenshots/stock-balance.png)
+
 </details>
 
 ## Features

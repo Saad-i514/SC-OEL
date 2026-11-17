@@ -45,6 +45,9 @@ public final class InventoryApp {
     private final JLabel pageTitle = text("Overview", 28, INK), pageSubtitle = text("Your store, at a glance.", 13, MUTED);
     private final WorkspaceVisuals.StockChart stockChart = new WorkspaceVisuals.StockChart();
     private final JLabel[] stockCounts = {text("Not loaded", 13, ACCENT), text("Not loaded", 13, MUTED), text("Not loaded", 13, RED)};
+    private final JLabel[] stockPercent = {text("—",12,MUTED),text("—",12,MUTED),text("—",12,MUTED)};
+    private final JProgressBar[] stockBars = {new JProgressBar(),new JProgressBar(),new JProgressBar()};
+    private final JLabel activityCount = text("0 events",12,MUTED);
     private final JLabel attentionSummary = text("Loading stock health...", 14, INK);
     private final DefaultListModel<Item> attention = new DefaultListModel<>();
     private final JLabel attentionEmpty = text("No stock alerts to show.", 13, MUTED);
@@ -120,7 +123,16 @@ public final class InventoryApp {
         page.add(summaries); page.add(Box.createVerticalStrut(16));
         var lower=new JPanel(new GridLayout(1,2,16,0)); lower.setOpaque(false); lower.setMaximumSize(new Dimension(Integer.MAX_VALUE,300)); lower.setPreferredSize(new Dimension(800,300));
         var health=card(); health.setLayout(new BorderLayout(12,8)); health.add(text("Stock balance",18,INK),BorderLayout.NORTH); health.add(stockChart,BorderLayout.WEST);
-        var legend=vertical(); legend.add(Box.createVerticalStrut(12)); for(int i=0;i<3;i++) { legend.add(text(Item.STATUSES.get(i),12,MUTED)); legend.add(Box.createVerticalStrut(5)); legend.add(stockCounts[i]); legend.add(Box.createVerticalStrut(12)); } health.add(legend,BorderLayout.CENTER); lower.add(health);
+        var legend=new JPanel(new GridLayout(3,1,0,10)); legend.setOpaque(false);
+        Color[] colors={ACCENT,new Color(174,104,29),new Color(173,47,85)};
+        for(int i=0;i<3;i++) {
+            var row=WorkspaceVisuals.rounded(new Color(249,246,253),12); row.setBorder(new EmptyBorder(9,12,9,12)); row.setLayout(new BorderLayout(0,5));
+            var titleRow=new JPanel(new BorderLayout(8,0)); titleRow.setOpaque(false);
+            titleRow.add(text(Item.STATUSES.get(i),12,INK),BorderLayout.WEST); stockPercent[i].setForeground(colors[i]); titleRow.add(stockPercent[i],BorderLayout.EAST); row.add(titleRow,BorderLayout.NORTH);
+            stockCounts[i].setFont(new Font("Segoe UI",Font.BOLD,13)); stockCounts[i].setForeground(INK); row.add(stockCounts[i],BorderLayout.CENTER);
+            stockBars[i].setForeground(colors[i]); stockBars[i].setBackground(new Color(232,225,242)); stockBars[i].setBorderPainted(false); stockBars[i].setPreferredSize(new Dimension(0,4)); row.add(stockBars[i],BorderLayout.SOUTH); legend.add(row);
+        }
+        health.add(legend,BorderLayout.CENTER); lower.add(health);
         var needs=card(); needs.setLayout(new BorderLayout(0,10)); needs.add(attentionSummary,BorderLayout.NORTH);
         var list=new JList<>(attention); list.setCellRenderer(new WorkspaceVisuals.AttentionRow()); list.setFixedCellHeight(56); list.setVisibleRowCount(3); list.setFocusable(false);
         list.setBackground(Color.WHITE); list.getAccessibleContext().setAccessibleName("Products needing stock attention");
@@ -137,7 +149,7 @@ public final class InventoryApp {
         var banner=WorkspaceVisuals.rounded(new Color(236,224,250),18); banner.setLayout(new BorderLayout()); banner.setBorder(new EmptyBorder(14,24,14,20));
         var copy=vertical(); copy.add(text("Every action, accounted for.",24,INK)); copy.add(Box.createVerticalStrut(10)); copy.add(text("Loads, saves and errors from this open workspace.",13,MUTED)); copy.add(Box.createVerticalStrut(6)); copy.add(text("Session-only history · resets when the application closes",11,MUTED));
         banner.add(copy,BorderLayout.CENTER); var art=new WorkspaceVisuals.Artwork("activity.png"); art.setPreferredSize(new Dimension(175,105)); banner.add(art,BorderLayout.EAST); page.add(banner,BorderLayout.NORTH);
-        var panel=card(); panel.setLayout(new BorderLayout(0,12)); panel.add(text("Session timeline",18,INK),BorderLayout.NORTH);
+        var panel=card(); panel.setLayout(new BorderLayout(0,12)); var timelineHeader=new JPanel(new BorderLayout()); timelineHeader.setOpaque(false); timelineHeader.add(text("Session timeline",18,INK),BorderLayout.WEST); timelineHeader.add(activityCount,BorderLayout.EAST); panel.add(timelineHeader,BorderLayout.NORTH);
         var events=new JTable(activityModel); events.setRowHeight(44); events.setShowGrid(false); events.setFillsViewportHeight(true); events.setBackground(Color.WHITE); events.setFont(new Font("Segoe UI",Font.PLAIN,13)); events.getColumnModel().getColumn(0).setMaxWidth(110);
         events.getColumnModel().getColumn(0).setMinWidth(90);
         events.setDefaultRenderer(Object.class,new WorkspaceVisuals.ActivityCell());
@@ -146,7 +158,8 @@ public final class InventoryApp {
         events.addComponentListener(new java.awt.event.ComponentAdapter() {
             @Override public void componentResized(java.awt.event.ComponentEvent event) { sizeEvents.run(); }
         });
-        events.getTableHeader().setFont(new Font("Segoe UI",Font.BOLD,12)); var scroll=new JScrollPane(events); scroll.setBorder(BorderFactory.createLineBorder(LINE)); panel.add(scroll); page.add(panel,BorderLayout.CENTER); return page;
+        events.setTableHeader(null); events.setIntercellSpacing(new Dimension(0,8)); events.setSelectionBackground(new Color(237,228,252));
+        var scroll=new JScrollPane(events); scroll.setBorder(null); scroll.setViewportBorder(null); scroll.getViewport().setBackground(Color.WHITE); panel.add(scroll); page.add(panel,BorderLayout.CENTER); return page;
     }
     private JPanel inventoryPanel() {
         var panel = card(); panel.setLayout(new BorderLayout(0, 16));
@@ -276,6 +289,7 @@ public final class InventoryApp {
     }
     private void recordActivity(String event) {
         activityModel.insertRow(0,new Object[]{LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),event});
+        activityCount.setText(activityModel.getRowCount()+ (activityModel.getRowCount()==1?" event this session":" events this session"));
     }
     private void work(Callable<String> operation) {
         busy = true; controls(); message.setForeground(MUTED); message.setText("Syncing inventory..."); connection.setText("SYNCING"); connection.setForeground(MUTED);
@@ -288,7 +302,10 @@ public final class InventoryApp {
                     for (Item item : items) model.addRow(new Object[]{item.id(), item.name(), item.quantity(), item.status()});
                     long[] totals = summarize(items); for (int i = 0; i < totals.length; i++) metrics[i].setText(String.format("%,d", totals[i]));
                     stockChart.setValues(totals[0]-totals[2]-totals[3],totals[2],totals[3]);
-                    long[] stock={totals[0]-totals[2]-totals[3],totals[2],totals[3]}; for(int i=0;i<3;i++) stockCounts[i].setText(stock[i]+" products");
+                    long[] stock={totals[0]-totals[2]-totals[3],totals[2],totals[3]}; for(int i=0;i<3;i++) {
+                        stockCounts[i].setText(String.format("%,d %s",stock[i],stock[i]==1?"product":"products"));
+                        int percent=totals[0]==0?0:(int)Math.round(stock[i]*100.0/totals[0]); stockPercent[i].setText(percent+"%"); stockBars[i].setValue(percent);
+                    }
                     attention.clear(); for(Item item:items) if(!item.status().equals("In Stock")) attention.addElement(item);
                     attentionSummary.setText(attention.isEmpty()?"No items marked for attention":"Items needing attention");
                     attentionEmpty.setText(items.isEmpty()?"Add products to start tracking stock.":"All products are marked In Stock.");

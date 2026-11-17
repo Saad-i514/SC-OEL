@@ -66,3 +66,8 @@ Replaced slash-separated text with typed product rows: bold name, formatted rema
 ## Application-wide formatting review - 18 November 2026
 
 Reviewed Overview, populated Inventory, and Activity on the available desktop. Inventory now reserves readable widths for identity, quantity and stock-status columns, gives product names more space, and exposes full cell values in tooltips. Search and status-filter controls share a 44 px height. Activity uses padded alternating rows and wraps messages; row heights recalculate as messages arrive or the table width changes. Automated checks verify that long messages wrap in narrow columns and row heights shrink again when widened. Java compilation and validation/view checks passed. Database operations were unchanged and not rerun. Other display scales and smaller-than-minimum windows remain unverified.
+
+
+## Stock balance and Activity presentation
+
+Replaced loose stock labels with three aligned tinted summary rows containing product counts, rounded percentages and matching progress indicators. Zero inventory displays 0 percent. Activity now omits spreadsheet headers, uses spacious entries with timestamp/event separation and bold messages, and shows the session-event count. Reviewed both pages with live demo inventory; compilation and view checks passed. Activity remains session-only; no synthetic events are inserted.
