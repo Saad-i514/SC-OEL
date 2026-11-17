@@ -1,4 +1,3 @@
 url=jdbc:postgresql://db.YOUR_PROJECT.supabase.co:5432/postgres?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory&connectTimeout=10&socketTimeout=20
 user=postgres
 password=YOUR_DATABASE_PASSWORD
-

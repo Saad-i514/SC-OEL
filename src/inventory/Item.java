@@ -1,6 +1,7 @@
 package inventory;
 
-/** Validated inventory value. @author OEL Team
+/** Validated inventory value.
+ * @author OEL Team
  * @param id database identity (zero for a new item)
  * @param name nonblank item name
  * @param quantity nonnegative whole quantity

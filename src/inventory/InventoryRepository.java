@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-/** Prepared-statement persistence for Supabase PostgreSQL. @author OEL Team */
+/** Prepared-statement persistence for Supabase PostgreSQL.
+ * @author OEL Team */
 public final class InventoryRepository {
     private final Properties config = new Properties();
     /** Loads untracked local connection settings.

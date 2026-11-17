@@ -6,7 +6,8 @@ import java.awt.*;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/** Desktop inventory editor with background database operations. @author OEL Team */
+/** Desktop inventory editor with background database operations.
+ * @author OEL Team */
 public final class InventoryApp {
     private final JFrame frame = new JFrame("Stockroom | Inventory Management");
     private final DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Item name", "Quantity", "Stock status"}, 0) {
@@ -92,6 +93,7 @@ public final class InventoryApp {
         }.execute();
     }
     /** Starts the application on the Swing event thread.
+     *
      * @param args unused
      */
     public static void main(String[] args) {

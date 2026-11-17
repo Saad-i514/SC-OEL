@@ -1,9 +1,11 @@
 package inventory;
 
-/** Dependency-free validation checks. @author OEL Team */
+/** Dependency-free validation checks.
+ * @author OEL Team */
 public final class ItemTest {
     private ItemTest() {}
-    /** Executes checks. @param args unused */
+    /** Executes checks.
+     * @param args unused */
     public static void main(String[] args) {
         assert Item.parse(0, " Tea ", " 12 ", "In Stock").name().equals("Tea");
         assert Item.parse(0, "Tea", "0", "Out of Stock").quantity() == 0;
