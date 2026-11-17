@@ -113,13 +113,7 @@ Open the project in IntelliJ IDEA, Eclipse, or NetBeans. Select **JDK 21**, mark
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    A[Swing interface] --> B[Item validation]
-    B --> C[JDBC repository]
-    C -->|Verified TLS| D[Supabase session pooler]
-    D --> E[(PostgreSQL)]
-```
+![Architecture: Swing interface → Item validation → JDBC repository → verified TLS → Supabase session pooler → PostgreSQL](docs/architecture.svg)
 
 | Component | Responsibility |
 | :--- | :--- |

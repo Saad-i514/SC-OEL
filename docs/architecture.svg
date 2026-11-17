@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="200" viewBox="0 0 1040 200" role="img" aria-labelledby="title desc">
+  <title id="title">Stockroom architecture</title>
+  <desc id="desc">Swing interface flows through item validation and the JDBC repository, then connects over verified TLS to the Supabase session pooler and PostgreSQL.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#94a3b8"/></marker>
+  </defs>
+  <rect width="1040" height="200" rx="16" fill="#0f172a"/>
+  <g fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)">
+    <path d="M192 110 H225"/><path d="M394 110 H427"/><path d="M596 110 H629"/><path d="M798 110 H831"/>
+  </g>
+  <g fill="#1e293b" stroke="#475569">
+    <rect x="24" y="75" width="168" height="70" rx="10"/>
+    <rect x="226" y="75" width="168" height="70" rx="10"/>
+    <rect x="428" y="75" width="168" height="70" rx="10"/>
+  </g>
+  <g fill="#12372d" stroke="#3ecf8e">
+    <rect x="630" y="75" width="168" height="70" rx="10"/>
+    <rect x="832" y="75" width="184" height="70" rx="10"/>
+  </g>
+  <g fill="#f8fafc" font-family="Arial, Helvetica, sans-serif" font-size="16" text-anchor="middle">
+    <text x="108" y="116">Swing interface</text>
+    <text x="310" y="116">Item validation</text>
+    <text x="512" y="116">JDBC repository</text>
+    <text x="714" y="105">Supabase<tspan x="714" dy="22">session pooler</tspan></text>
+    <text x="924" y="116">PostgreSQL</text>
+    <text x="613" y="54" fill="#a7f3d0" font-size="13">Verified TLS</text>
+  </g>
+</svg>
